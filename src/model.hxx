@@ -12,9 +12,12 @@ public:
     using Dimensions = ge211::Dims<int>;
     using Position_set = std::vector<Position>;
 
-    friend struct Test_Access;
+    void shift(Dimensions);
 
 private:
+    int width_ = 4;
+    int height_ = 4;
+
     int board_[4][4];
     int score_;
 
@@ -30,6 +33,8 @@ private:
 
     Position choose_corner_(Dimensions);
 
-    void shift_(Dimensions);
+    Position_set empty_positions_();
 
+
+    friend struct Test_Access;
 };
