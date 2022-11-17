@@ -11,23 +11,23 @@ Controller::draw(ge211::Sprite_set& set)
 }
 
 void
-Controller::on_key_down(ge211::events::Key)
+Controller::on_key_down(ge211::events::Key key)
 {
     if (key == ge211::Key::left()) {
         // shift the model to the left
-        model_.shift_({-1,0});
+        model_.shift({-1,0});
     }
     if (key == ge211::Key::right()) {
         // shift the model to the right
-        model_.shift_({1,0});
+        model_.shift({1,0});
     }
     if (key == ge211::Key::up()) {
         // shift the model up
-        model_.shift_({0,-1});
+        model_.shift({0,-1});
     }
     if (key == ge211::Key::down()) {
         // shift the model down
-        model_.shift_({0,1});
+        model_.shift({0,1});
     }
 }
 
