@@ -14,8 +14,8 @@ Model::Model()
 void
 Model::print_board_() const
 {
-    for (int i = 0; i<4; i++){
-        for (int j = 0; j<4; j++){
+    for (int i = 0; i<height_; i++){
+        for (int j = 0; j<width_; j++){
             std::cout << board_[i][j] << "\t";
         }
         std::cout << "\n";
@@ -118,8 +118,8 @@ Model::Position_set
 Model::empty_positions_()
 {
     Position_set empty_positions;
-    for (int i = 0; i<4; i++){
-        for (int j = 0; j<4; j++){
+    for (int i = 0; i<height_; i++){
+        for (int j = 0; j<width_; j++){
             if (board_[i][j] == 0) empty_positions.push_back({i,j});
         }
     }
