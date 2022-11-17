@@ -14,7 +14,20 @@ void
 Controller::on_key_down(ge211::events::Key)
 {
     if (key == ge211::Key::left()) {
-        model_.turn_left(false);
+        // shift the model to the left
+        model_.shift_({-1,0});
+    }
+    if (key == ge211::Key::right()) {
+        // shift the model to the right
+        model_.shift_({1,0});
+    }
+    if (key == ge211::Key::up()) {
+        // shift the model up
+        model_.shift_({0,-1});
+    }
+    if (key == ge211::Key::down()) {
+        // shift the model down
+        model_.shift_({0,1});
     }
 }
 
