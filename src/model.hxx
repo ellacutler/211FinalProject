@@ -14,6 +14,8 @@ public:
 
     void shift(Dimensions);
 
+    int operator[](Model::Position pos) const;
+
 private:
     int width_ = 4;
     int height_ = 4;
@@ -27,14 +29,15 @@ private:
 
     void print_board_() const;
 
-    bool in_bounds_(Position);
+    bool in_bounds_(Position) const;
 
-    Dimensions inverse_(Dimensions);
+    Dimensions inverse_(Dimensions) const;
 
-    Position choose_corner_(Dimensions);
+    Position choose_corner_(Dimensions) const;
 
-    Position_set empty_positions_();
+    Position_set empty_positions_() const;
 
+    void increase_score_(int x);
 
     friend struct Test_Access;
 };
