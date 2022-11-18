@@ -35,9 +35,9 @@ Model::operator[](Model::Position pos) const
 void
 Model::print_board() const
 {
-    for (int i = 0; i<height_; i++){
-        for (int j = 0; j<width_; j++){
-            std::cout << board_[i][j] << "\t";
+    for (int i = 0; i<width_; i++){
+        for (int j = 0; j<height_; j++){
+            std::cout << get_at_({i,j}) << "\t";
         }
         std::cout << "\n";
     }
@@ -49,16 +49,23 @@ Model::in_bounds_(Model::Position pos) const
     return (pos.x>=0 && pos.x<width_) && (pos.y>=0 && pos.y<height_);
 }
 
+
+///NOTE: Because of how arrays-in-arrays work (for get_at_ and set_at_)...
+///the first index represents the row number, in this case is the y-coordinate
+///the second index represents the column number, in this case the x-coordinate
+///Therefore, to make manipulating the board more intuitive, our get and set
+///functions are defined as below:
+
 void
 Model::set_at_(Model::Position pos, int n)
 {
-    board_[pos.x][pos.y] = n;
+    board_[pos.y][pos.x] = n;
 }
 
 int
 Model::get_at_(Model::Position pos) const
 {
-    return board_[pos.x][pos.y];
+    return board_[pos.y][pos.x];
 }
 
 
@@ -80,14 +87,15 @@ Model::choose_corner_(Model::Dimensions dir) const
 void
 Model::shift(Model::Dimensions dir)
 {
-    ///NOTE: Because of how arrays-in-arrays work...
-    /// -The x coordinate of dir corresponds to the row, so {1,0} means down
-    /// -The y coordinate of dir corresponds to the column, so {0,1} means right
-    /// To make shift() work intuitively, dir is immediately inverted and =*-1:
-    dir = inverse_(dir);
+    ///To shift the board to the right, we want to start on the right and
+    /// travel to the left, replacing any empty tiles (0's) with ones from
+    /// further to the left. For this reason, to make this function more
+    /// intuitive to use, we immediately negate the INPUT DIRECTION to
+    /// get the direction along which we will TRAVEL
     dir *= -1;
-    ///This way, an input of {1,0} = right arrow = shift right,
-    ///                      {0,-1} = up arrow = shift up (y decreasing)
+    ///This way:
+    ///     right arrow => shift({1,0}) => shift right, travel left
+    ///     up arrow => shift({0,-1}) => shift up (y decreasing), travel down
 
     ///for debug
     // std::cout << choose_corner(dir) << "\n";
@@ -153,9 +161,12 @@ Model::Position_set
 Model::empty_positions_() const
 {
     Position_set empty_positions;
-    for (int i = 0; i<height_; i++){
-        for (int j = 0; j<width_; j++){
-            if (board_[i][j] == 0) empty_positions.push_back({i,j});
+    for (int i = 0; i<width_; i++){
+        for (int j = 0; j<height_; j++){
+            if (0==get_at_({i,j}))
+            {
+                empty_positions.push_back({i, j});
+            }
         }
     }
     return empty_positions;
@@ -166,7 +177,10 @@ Model::spawn_tile_()
     Position_set empty_pos = empty_positions_();
 
     //get a random element of empty_pos, set it to value of 2 or 4
-    int loc = random_number_source(0,empty_pos.size());
-    int val = random_number_source(1,2)*2;
+    int loc = random_number_source(0,empty_pos.size()-1);
+    int val = random_number_source(1,10) == 1 ? 4 : 2; //10% chance of 4
     set_at_(empty_pos.at(loc), val);
+
+    ///debug
+    //std::cout << val << " spawing at: " << empty_pos.at(loc) << "\n";
 }
