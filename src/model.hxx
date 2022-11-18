@@ -7,6 +7,8 @@ class Model
 
 public:
     Model();
+    Model(int size);
+    Model(int width, int height);
 
     using Position = ge211::Posn<int>;
     using Dimensions = ge211::Dims<int>;
@@ -14,20 +16,19 @@ public:
 
     void shift(Dimensions);
 
+    void print_board() const;
+
     int operator[](Model::Position pos) const;
 
 private:
-    int width_ = 4;
-    int height_ = 4;
-
-    int board_[4][4];
+    int width_;
+    int height_;
     int score_;
+    int** board_;
 
     void set_at_(Position pos, int n);
 
     int get_at_(Position pos) const;
-
-    void print_board_() const;
 
     bool in_bounds_(Position) const;
 

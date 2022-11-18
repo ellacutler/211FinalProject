@@ -1,7 +1,8 @@
 #include "controller.hxx"
 
-Controller::Controller()
-        : view_(model_)
+Controller::Controller(int width, int height)
+        : model_(width, height),
+          view_(model_)
 { }
 
 void

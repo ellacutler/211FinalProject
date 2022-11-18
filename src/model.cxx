@@ -2,17 +2,27 @@
 #include <iostream>
 
 Model::Model()
-        : score_(0)
+        : Model(4,4)
+{ }
+
+Model::Model(int size)
+        : Model(size, size)
+{ }
+
+Model::Model(int width, int height)
+        : width_(width),
+          height_(height),
+          score_(0)
 {
-    for (int i = 0; i < height_; i++) {
-        for (int j = 0; j < width_; j++) {
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
             board_[i][j] = 0;
         }
     }
 }
 
 void
-Model::print_board_() const
+Model::print_board() const
 {
     for (int i = 0; i<height_; i++){
         for (int j = 0; j<width_; j++){
@@ -113,7 +123,7 @@ Model::shift(Model::Dimensions dir)
         }
 
     }
-    print_board_();
+    print_board();
 }
 
 Model::Position_set
