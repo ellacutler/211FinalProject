@@ -24,7 +24,7 @@ private:
     int width_;
     int height_;
     int score_;
-    int** board_;
+    std::vector<std::vector<int>> board_;
 
     void set_at_(Position pos, int n);
 

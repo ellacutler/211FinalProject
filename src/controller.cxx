@@ -32,8 +32,4 @@ Controller::on_key_down(ge211::events::Key key)
     }
 }
 
-ge211::Dims<int>
-Controller::initial_window_dimensions() const
-{
-    return screen_dimensions_;
-}
+

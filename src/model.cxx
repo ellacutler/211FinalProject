@@ -14,10 +14,9 @@ Model::Model(int width, int height)
           height_(height),
           score_(0)
 {
+    std::vector<int> row(width, 0);
     for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            board_[i][j] = 0;
-        }
+        board_.push_back(row);
     }
 }
 
