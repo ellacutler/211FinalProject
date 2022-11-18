@@ -1,5 +1,6 @@
 #include "model.hxx"
 #include <iostream>
+#include <ge211.hxx>
 
 Model::Model()
         : Model(4,4)
@@ -12,12 +13,23 @@ Model::Model(int size)
 Model::Model(int width, int height)
         : width_(width),
           height_(height),
-          score_(0)
+          score_(0),
+          random_number_source(ge211::unbounded)
 {
     std::vector<int> row(width, 0);
     for (int i = 0; i < height; i++) {
         board_.push_back(row);
     }
+
+    //spawn starting tiles
+    spawn_tile_();
+    spawn_tile_();
+}
+
+int
+Model::operator[](Model::Position pos) const
+{
+    return get_at_(pos);
 }
 
 void
@@ -122,7 +134,19 @@ Model::shift(Model::Dimensions dir)
         }
 
     }
+
+    //spawn new tile
+    spawn_tile_();
+
+    ///for debug
     print_board();
+    std::cout << "\n";
+}
+
+void
+Model::increase_score_(int x)
+{
+    score_ += x;
 }
 
 Model::Position_set
@@ -136,15 +160,13 @@ Model::empty_positions_() const
     }
     return empty_positions;
 }
-
-int
-Model::operator[](Model::Position pos) const
-{
-    return get_at_(pos);
-}
-
 void
-Model::increase_score_(int x)
+Model::spawn_tile_()
 {
-    score_ += x;
+    Position_set empty_pos = empty_positions_();
+
+    //get a random element of empty_pos, set it to value of 2 or 4
+    int loc = random_number_source(0,empty_pos.size());
+    int val = random_number_source(1,2)*2;
+    set_at_(empty_pos.at(loc), val);
 }

@@ -24,7 +24,10 @@ private:
     int width_;
     int height_;
     int score_;
+    ge211::Random_source<int> random_number_source;
     std::vector<std::vector<int>> board_;
+
+
 
     void set_at_(Position pos, int n);
 
@@ -36,9 +39,12 @@ private:
 
     Position choose_corner_(Dimensions) const;
 
+    void increase_score_(int x);
+
     Position_set empty_positions_() const;
 
-    void increase_score_(int x);
+    void spawn_tile_();
+
 
     friend struct Test_Access;
 };
