@@ -9,9 +9,11 @@ public:
 
     void draw(ge211::Sprite_set& set);
 
+    using Dimensions = ge211::Dims<int>;
+    using Position = ge211::Posn<int>;
+
 private:
     Model const& model_;
-
 
     ge211::Font sans30_{"sans.ttf", 30};
     ge211::Text_sprite value_sprite_[4][4];
