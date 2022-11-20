@@ -1,6 +1,8 @@
 #include "model.hxx"
 #include <iostream>
 #include <ge211.hxx>
+#include <algorithm>
+#include <vector>
 
 Model::Model()
         : Model(4,4)
@@ -14,16 +16,18 @@ Model::Model(int width, int height)
         : width_(width),
           height_(height),
           score_(0),
-          random_number_source(ge211::unbounded)
+          random_number_source(ge211::unbounded),
+          gameover_(false),
+          won_(false)
 {
     std::vector<int> row(width, 0);
     for (int i = 0; i < height; i++) {
         board_.push_back(row);
     }
 
-    //spawn starting tiles
-    spawn_tile_();
-    spawn_tile_();
+    //spawn starting tiles (2)
+    spawn_tile_(empty_positions_());
+    spawn_tile_(empty_positions_());
 }
 
 int
@@ -35,9 +39,9 @@ Model::operator[](Model::Position pos) const
 void
 Model::print_board() const
 {
-    for (int i = 0; i<width_; i++){
-        for (int j = 0; j<height_; j++){
-            std::cout << get_at_({i,j}) << "\t";
+    for (int j = 0; j<height_; j++){
+        for (int i = 0; i<width_; i++){
+            std::cout << get_at_({i, j}) << "\t";
         }
         std::cout << "\n";
     }
@@ -51,12 +55,12 @@ Model::in_bounds_(Model::Position pos) const
 int
 Model::get_width() const
 {
-    return this->width_;
+    return width_;
 }
 int
 Model::get_height() const
 {
-    return this->height_;
+    return height_;
 }
 
 
@@ -98,6 +102,12 @@ Model::choose_corner_(Model::Dimensions dir) const
 void
 Model::shift(Model::Dimensions dir)
 {
+    ///for debug
+    std::cout << dir << "\n";
+
+    //disallow moves if game is over
+    if (gameover_) return;
+
     ///To shift the board to the right, we want to start on the right and
     /// travel to the left, replacing any empty tiles (0's) with ones from
     /// further to the left. For this reason, to make this function more
@@ -109,7 +119,7 @@ Model::shift(Model::Dimensions dir)
     ///     up arrow => shift({0,-1}) => shift up (y decreasing), travel down
 
     ///for debug
-    // std::cout << choose_corner(dir) << "\n";
+    std::cout << choose_corner_(dir) << "\n";
 
     for (Position start = choose_corner_(dir); in_bounds_(start);
          start+=inverse_(dir))
@@ -118,7 +128,7 @@ Model::shift(Model::Dimensions dir)
         Position ahead = start+dir;
 
         ///for debug
-        // std::cout << behind << " :b|a: " << ahead << "\n";
+        std::cout << behind << " :b|a: " << ahead << "\n";
 
         //shift, merge, etc
         while (in_bounds_(ahead)) {
@@ -131,8 +141,8 @@ Model::shift(Model::Dimensions dir)
             int behind_val = get_at_(behind);
 
             /// for debug
-            // std::cout << behind << " :b|val: " << behind_val << "\t|\t" << ahead
-            // << " :a|val: " << ahead_val << "\n";
+            std::cout << behind << " :b|val: " << behind_val << "\t|\t" << ahead
+            << " :a|val: " << ahead_val << "\n";
 
             if (ahead == behind) ahead += dir; //overlapping positions
             else if (ahead_val == 0) ahead += dir; //ahead is empty
@@ -154,8 +164,8 @@ Model::shift(Model::Dimensions dir)
 
     }
 
-    //spawn new tile
-    spawn_tile_();
+    next_turn_();
+
 
     ///for debug
     print_board();
@@ -174,7 +184,7 @@ Model::empty_positions_() const
     Position_set empty_positions;
     for (int i = 0; i<width_; i++){
         for (int j = 0; j<height_; j++){
-            if (0==get_at_({i,j}))
+            if (0 == get_at_({i, j}))
             {
                 empty_positions.push_back({i, j});
             }
@@ -183,10 +193,8 @@ Model::empty_positions_() const
     return empty_positions;
 }
 void
-Model::spawn_tile_()
+Model::spawn_tile_(Position_set empty_pos)
 {
-    Position_set empty_pos = empty_positions_();
-
     //get a random element of empty_pos, set it to value of 2 or 4
     int loc = random_number_source(0,empty_pos.size()-1);
     int val = random_number_source(1,10) == 1 ? 4 : 2; //10% chance of 4
@@ -194,4 +202,31 @@ Model::spawn_tile_()
 
     ///debug
     //std::cout << val << " spawing at: " << empty_pos.at(loc) << "\n";
+}
+
+
+void
+Model::next_turn_()
+{
+    // check if game over/won, spawn new tile if not
+    Position_set empty_pos = empty_positions_();
+    if (empty_pos.empty()) gameover_ = true;
+    //no, if ANY MOVE would keep !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+    // this tru, then gameover
+    else if (is_in_board_(2048)){
+        gameover_ = true;
+        won_ = true;
+    } else {
+        spawn_tile_(empty_pos);
+    }
+}
+
+bool
+Model::is_in_board_(int x)
+{
+    for (int i = 0; i<height_; i++) {
+        if (std::find(board_[i].begin(), board_[i].end(), 2048)
+        != board_[i].end()) return true;
+    }
+    return false;
 }

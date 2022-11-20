@@ -56,8 +56,8 @@ View::View(Model const& model)
 void
 View::draw(ge211::Sprite_set& set)
 {
-   for(int i = 0; i < model_.get_height(); i++){
-       for(int j = 0; j <model_.get_width(); j++){
+   for(int i = 0; i < model_.get_width(); i++){
+       for(int j = 0; j <model_.get_height(); j++){
            set.add_sprite(
                    tile_sprite,
                    board_to_screen({i,j}),
@@ -86,10 +86,10 @@ View::add_number_sprite(ge211::Sprite_set& set, Model::Position pos, int z)
 const
 { // using from below, tried but it's not worth not-hard coding
     // (unless there's a way to convert between strings and sprites..)
-    int val = model_.get_at_(pos);
-    int displayindex = log2(val) - 1;
+    int val = model_[pos];
+    // int displayindex = log2(val) - 1;
     // when
-    if(model_.get_at_(pos) != 0){
+    if(val != 0){
         set.add_sprite(
                 number_sprites_.at(log2(val) - 1),
                 board_to_screen({pos.x,pos.y}),
