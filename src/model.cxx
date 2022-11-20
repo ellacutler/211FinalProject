@@ -32,8 +32,10 @@ Model::Model(int width, int height)
 
 int
 Model::operator[](Model::Position pos) const
-{
-    return get_at_(pos);
+{ //I was thinking we could use this as an "only outside things can access"
+    //that way we can do a check first to make it safe ? idk what do you think
+    if (in_bounds_(pos)) return get_at_(pos);
+    return -1; //or should we throw error here?
 }
 
 void
@@ -63,7 +65,26 @@ Model::get_height() const
     return height_;
 }
 
+///Actually play a move, shifting the board, checking for gameover and only
+// spawning a new block if the shift was a legal move
+void
+Model::play_move(Dimensions dir)
+{
+    //disallow moves if game is over
+    if (gameover_) {
+        ///for debug
+        // std::cout << "GAME IS OVER\n";
+        return;
+    }
+    std::cout << "Gameover?: " << gameover_ << "\n";
 
+    bool board_changed = shift_(dir);
+    if (board_changed) next_turn_();
+
+    ///for debug
+    // print_board();
+    // std::cout << "\n";
+}
 
 ///NOTE: Because of how arrays-in-arrays work (for get_at_ and set_at_)...
 ///the first index represents the row number, in this case is the y-coordinate
@@ -99,14 +120,14 @@ Model::choose_corner_(Model::Dimensions dir) const
     return {width_-1,height_-1};
 }
 
-void
-Model::shift(Model::Dimensions dir)
+bool
+Model::shift_(Model::Dimensions dir)
 {
     ///for debug
-    std::cout << dir << "\n";
+    // std::cout << dir << "\n";
 
-    //disallow moves if game is over
-    if (gameover_) return;
+    //for returning whether or not board has changed as a result of input
+    bool board_changed = false;
 
     ///To shift the board to the right, we want to start on the right and
     /// travel to the left, replacing any empty tiles (0's) with ones from
@@ -119,7 +140,7 @@ Model::shift(Model::Dimensions dir)
     ///     up arrow => shift({0,-1}) => shift up (y decreasing), travel down
 
     ///for debug
-    std::cout << choose_corner_(dir) << "\n";
+    // std::cout << choose_corner_(dir) << "\n";
 
     for (Position start = choose_corner_(dir); in_bounds_(start);
          start+=inverse_(dir))
@@ -128,7 +149,7 @@ Model::shift(Model::Dimensions dir)
         Position ahead = start+dir;
 
         ///for debug
-        std::cout << behind << " :b|a: " << ahead << "\n";
+        // std::cout << behind << " :b|a: " << ahead << "\n";
 
         //shift, merge, etc
         while (in_bounds_(ahead)) {
@@ -141,8 +162,8 @@ Model::shift(Model::Dimensions dir)
             int behind_val = get_at_(behind);
 
             /// for debug
-            std::cout << behind << " :b|val: " << behind_val << "\t|\t" << ahead
-            << " :a|val: " << ahead_val << "\n";
+            // std::cout << behind << " :b|val: " << behind_val << "\t|\t" << ahead
+            // << " :a|val: " << ahead_val << "\n";
 
             if (ahead == behind) ahead += dir; //overlapping positions
             else if (ahead_val == 0) ahead += dir; //ahead is empty
@@ -152,24 +173,20 @@ Model::shift(Model::Dimensions dir)
                 set_at_(ahead,0);
                 behind += dir;
                 ahead += dir;
+                board_changed = true;
             }
             else if (behind_val > 0) behind += dir; //dif val, so move forward
                 // to look for place to insert ahead_val
-            else { //behind empty, ahead nonempty
+            else { //behind empty, ahead nonempty, set behind to ahead_val
                 set_at_(behind, ahead_val);
                 set_at_(ahead, 0);
                 ahead += dir;
+                board_changed = true;
             }
         }
 
     }
-
-    next_turn_();
-
-
-    ///for debug
-    print_board();
-    std::cout << "\n";
+    return board_changed;
 }
 
 void
@@ -204,29 +221,46 @@ Model::spawn_tile_(Position_set empty_pos)
     //std::cout << val << " spawing at: " << empty_pos.at(loc) << "\n";
 }
 
-
-void
-Model::next_turn_()
-{
-    // check if game over/won, spawn new tile if not
-    Position_set empty_pos = empty_positions_();
-    if (empty_pos.empty()) gameover_ = true;
-    //no, if ANY MOVE would keep !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-    // this tru, then gameover
-    else if (is_in_board_(2048)){
-        gameover_ = true;
-        won_ = true;
-    } else {
-        spawn_tile_(empty_pos);
-    }
-}
-
 bool
-Model::is_in_board_(int x)
+Model::is_in_board_(int x) const
 {
     for (int i = 0; i<height_; i++) {
         if (std::find(board_[i].begin(), board_[i].end(), 2048)
         != board_[i].end()) return true;
     }
     return false;
+}
+
+bool
+Model::is_board_mergable_() const
+{
+    // iterate through the board, checking the number TO THE RIGHT and BELOW
+    // each one.
+    // If this number is the same, return true.
+    // Return false at the end if this is not the case anywhere on the board.
+
+    int cur;
+    for (int j = 0; j<height_; j++){
+        for (int i = 0; i<width_; i++){
+            cur = get_at_({i,j});
+            if (cur==0) continue;
+            if (i+1<width_ && (get_at_({i+1,j}) == cur)) return true;
+            if (j+1<height_ && (get_at_({i,j+1}) == cur)) return true;
+        }
+    }
+    return false;
+}
+
+void
+Model::next_turn_()
+{
+    // check if game over/won
+    if (is_in_board_(2048)) {
+        gameover_ = true;
+        won_ = true;
+    }
+    spawn_tile_(empty_positions_());
+    if (empty_positions_().empty() && !is_board_mergable_()) {
+        gameover_ = true;
+    }
 }
