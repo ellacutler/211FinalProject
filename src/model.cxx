@@ -76,7 +76,6 @@ Model::play_move(Dimensions dir)
         // std::cout << "GAME IS OVER\n";
         return;
     }
-    std::cout << "Gameover?: " << gameover_ << "\n";
 
     bool board_changed = shift_(dir);
     if (board_changed) next_turn_();
