@@ -18,4 +18,22 @@ private:
     ge211::Font sans30_{"sans.ttf", 30};
     ge211::Text_sprite value_sprite_[4][4];
     ge211::Rectangle_sprite const tile_sprite;
+    ge211::Rectangle_sprite const s2;
+    ge211::Rectangle_sprite const s4;
+    ge211::Rectangle_sprite const s8;
+    ge211::Rectangle_sprite const s16;
+    ge211::Rectangle_sprite const s32;
+    ge211::Rectangle_sprite const s64;
+    ge211::Rectangle_sprite const s128;
+    ge211::Rectangle_sprite const s256;
+    ge211::Rectangle_sprite const s512;
+    ge211::Rectangle_sprite const s1024;
+    ge211::Rectangle_sprite const s2048;
+    ge211::Font number_font;
+    std::vector<ge211::Text_sprite> number_sprites_;
+
+    View::Position board_to_screen(Model::Position pos) const;
+    void add_number_sprite(ge211::Sprite_set&, Model::Position pos, int
+    z) const;
+    void add_number_text(std::string&,ge211::Font&) const;
 };

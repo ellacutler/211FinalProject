@@ -48,6 +48,17 @@ Model::in_bounds_(Model::Position pos) const
 {
     return (pos.x>=0 && pos.x<width_) && (pos.y>=0 && pos.y<height_);
 }
+int
+Model::get_width() const
+{
+    return this->width_;
+}
+int
+Model::get_height() const
+{
+    return this->height_;
+}
+
 
 
 ///NOTE: Because of how arrays-in-arrays work (for get_at_ and set_at_)...

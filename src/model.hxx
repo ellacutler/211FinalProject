@@ -19,6 +19,9 @@ public:
     void print_board() const;
 
     int operator[](Model::Position pos) const;
+    int get_width() const;
+    int get_height() const;
+    int get_at_(Position pos) const;
 
 private:
     int width_;
@@ -29,9 +32,10 @@ private:
 
 
 
+
     void set_at_(Position pos, int n);
 
-    int get_at_(Position pos) const;
+
 
     bool in_bounds_(Position) const;
 
