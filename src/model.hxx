@@ -19,6 +19,8 @@ public:
     int operator[](Model::Position pos) const;
     int get_width() const;
     int get_height() const;
+    bool get_won() const;
+    bool is_gameover() const;
 
     void play_move(Dimensions);
 

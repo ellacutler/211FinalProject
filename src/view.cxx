@@ -9,8 +9,7 @@ int const grid_size = 100;
 int const board_size = grid_size - 2;
 // eventually make grid size a function of the model width and height
 // i hard coded the background sprites because there wasn't a real pattern for
-// all  the
-// numbers
+// all the numbers
 static Color const tile_color {100, 100, 100};
 static Color const c2 {238, 228, 218 };
 static Color const c4 {237, 224, 200};
@@ -23,6 +22,9 @@ static Color const c256 {237, 204, 97};
 static Color const c512 {237, 200, 80};
 static Color const c1024{237, 197, 63};
 static Color const c2048{237, 194, 46};
+
+static Color const lose_color{255,0,0,50};
+static Color const win_color {255,255,0,50};
 
 
 View::View(Model const& model)
@@ -39,11 +41,11 @@ View::View(Model const& model)
           s512({board_size, board_size}, c512),
           s1024({board_size, board_size}, c1024),
           s2048({board_size, board_size}, c2048),
-          number_font("sans.ttf", grid_size/2)
-
-
-
-
+          number_font("sans.ttf", grid_size/2),
+          lose_screen(initial_window_dimensions(),lose_color),
+          win_screen(initial_window_dimensions(),win_color),
+          lose_text("You lose! Press R to restart!",number_font),
+          win_text("You win! Press R to play again!",number_font)
 {
  int i = 2;
  while(i <= 2048){
@@ -51,6 +53,7 @@ View::View(Model const& model)
     number_sprites_.emplace_back(sval, number_font);
     i= i*2;
  }
+ ge211::Text_sprite::Builder builder(number_font);
 }
 
 void
@@ -73,6 +76,7 @@ View::draw(ge211::Sprite_set& set)
 
        }
    }
+   if (model_.is_gameover()) add_end_screen_(model_.get_won(), set);
 }
 View::Position
 View::board_to_screen(Model::Position pos) const
@@ -170,6 +174,31 @@ const
                 board_to_screen({pos.x, pos.y}),
                 15
         );
+    }
+
+}
+
+void
+View::add_end_screen_(bool is_win, Sprite_set& set) const
+{
+    if (is_win) {
+        set.add_sprite(
+                win_screen,
+                {0,0},
+                25);
+        set.add_sprite(
+                win_text,
+                {model_.get_width()/3,model_.get_height()/2},
+                30);
+    } else {
+        set.add_sprite(
+                lose_screen,
+                {0,0},
+                25);
+        set.add_sprite(
+                lose_text,
+                {0,grid_size*model_.get_height()/2,},
+                30);
     }
 
 }

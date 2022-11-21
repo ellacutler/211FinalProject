@@ -32,10 +32,9 @@ Model::Model(int width, int height)
 
 int
 Model::operator[](Model::Position pos) const
-{ //I was thinking we could use this as an "only outside things can access"
-    //that way we can do a check first to make it safe ? idk what do you think
+{
     if (in_bounds_(pos)) return get_at_(pos);
-    return -1; //or should we throw error here?
+    throw std::logic_error("Accessed board position is out of bounds.");
 }
 
 void
@@ -64,6 +63,17 @@ Model::get_height() const
 {
     return height_;
 }
+bool
+Model::is_gameover() const
+{
+    return gameover_;
+}
+bool
+Model::get_won() const
+{
+    return won_;
+}
+
 
 ///Actually play a move, shifting the board, checking for gameover and only
 // spawning a new block if the shift was a legal move

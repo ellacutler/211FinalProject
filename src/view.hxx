@@ -35,9 +35,15 @@ private:
     ge211::Font number_font;
     std::vector<ge211::Text_sprite> number_sprites_;
 
+    ge211::Rectangle_sprite const lose_screen;
+    ge211::Rectangle_sprite const win_screen;
+    ge211::Text_sprite lose_text;
+    ge211::Text_sprite win_text;
+
     View::Position board_to_screen(Model::Position pos) const;
     void add_number_sprite(ge211::Sprite_set&, Model::Position pos, int
     z) const;
     void add_number_text(std::string&,ge211::Font&) const;
+    void add_end_screen_(bool, ge211::Sprite_set&) const;
 
 };
