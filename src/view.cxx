@@ -179,3 +179,16 @@ View::add_number_text(std::string&, ge211::Font&) const
 {
 
 }
+
+View::Dimensions
+View::initial_window_dimensions() const
+{
+    return {grid_size * model_.get_width(),
+            grid_size*model_.get_height()};
+}
+
+std::string
+View::initial_window_title() const
+{
+    return "2048";
+}

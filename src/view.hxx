@@ -12,6 +12,9 @@ public:
     using Dimensions = ge211::Dims<int>;
     using Position = ge211::Posn<int>;
 
+    Dimensions initial_window_dimensions() const;
+    std::string initial_window_title() const;
+
 private:
     Model const& model_;
 
@@ -36,4 +39,5 @@ private:
     void add_number_sprite(ge211::Sprite_set&, Model::Position pos, int
     z) const;
     void add_number_text(std::string&,ge211::Font&) const;
+
 };
