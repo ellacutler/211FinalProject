@@ -54,7 +54,8 @@ View::View(Model const& model)
     number_sprites_.emplace_back(sval, number_font);
     i= i*2;
  }
- ge211::Text_sprite::Builder builder(number_font);
+ ge211::Text_sprite::Builder builder(number_font); //use this somehow to get
+ // sprite color
 }
 
 void
@@ -91,13 +92,11 @@ View::add_number_sprite(ge211::Sprite_set& set, Model::Position pos, int z)
 const
 { // using from below, tried but it's not worth not-hard coding
     // (unless there's a way to convert between strings and sprites..)
-    int val = model_.get_at_(pos);
-    int displayindex = log2(val) - 1;
-    // when
-    if(model_.get_at_(pos) != 0){
-        ge211::Posn<int> position= board_to_screen({pos.x ,pos.y
-                                              }) + ge211::Dims<int>(text_center,
-                                                         0);
+    int val = model_[pos];
+    //int displayindex = log2(val) - 1;
+    if(val != 0){
+        ge211::Posn<int> position= board_to_screen({pos.x ,pos.y})
+                + ge211::Dims<int>(text_center,0);
         set.add_sprite(
                 number_sprites_.at(log2(val) - 1),
                 position,
@@ -212,3 +211,17 @@ View::add_number_text(std::string&, ge211::Font&) const
 {
 
 }
+
+View::Dimensions
+View::initial_window_dimensions() const
+{
+    return {grid_size * model_.get_width(),
+            grid_size*model_.get_height()};
+}
+
+std::string
+View::initial_window_title() const
+{
+    return "2048";
+}
+
