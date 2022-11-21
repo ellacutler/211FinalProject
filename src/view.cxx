@@ -6,7 +6,8 @@ using Color = ge211::Color;
 using Sprite_set = ge211::Sprite_set;
 
 int const grid_size = 100;
-int const board_size = grid_size - 2;
+int const board_size = (grid_size - 2);
+int  text_center = board_size/4 + 5 ;
 // eventually make grid size a function of the model width and height
 // i hard coded the background sprites because there wasn't a real pattern for
 // all the numbers
@@ -59,8 +60,8 @@ View::View(Model const& model)
 void
 View::draw(ge211::Sprite_set& set)
 {
-   for(int i = 0; i < model_.get_width(); i++){
-       for(int j = 0; j <model_.get_height(); j++){
+   for(int i = 0; i < model_.get_height(); i++){
+       for(int j = 0; j <model_.get_width(); j++){
            set.add_sprite(
                    tile_sprite,
                    board_to_screen({i,j}),
@@ -90,13 +91,16 @@ View::add_number_sprite(ge211::Sprite_set& set, Model::Position pos, int z)
 const
 { // using from below, tried but it's not worth not-hard coding
     // (unless there's a way to convert between strings and sprites..)
-    int val = model_[pos];
-    // int displayindex = log2(val) - 1;
+    int val = model_.get_at_(pos);
+    int displayindex = log2(val) - 1;
     // when
-    if(val != 0){
+    if(model_.get_at_(pos) != 0){
+        ge211::Posn<int> position= board_to_screen({pos.x ,pos.y
+                                              }) + ge211::Dims<int>(text_center,
+                                                         0);
         set.add_sprite(
                 number_sprites_.at(log2(val) - 1),
-                board_to_screen({pos.x,pos.y}),
+                position,
                 20
 
         );
@@ -207,17 +211,4 @@ void
 View::add_number_text(std::string&, ge211::Font&) const
 {
 
-}
-
-View::Dimensions
-View::initial_window_dimensions() const
-{
-    return {grid_size * model_.get_width(),
-            grid_size*model_.get_height()};
-}
-
-std::string
-View::initial_window_title() const
-{
-    return "2048";
 }
