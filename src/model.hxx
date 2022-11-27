@@ -15,6 +15,7 @@ public:
     using Position_set = std::vector<Position>;
 
     void print_board() const;
+    Position_set all_positions() const;
 
     int operator[](Model::Position pos) const;
     int get_width() const;
@@ -25,6 +26,7 @@ public:
     void play_move(Dimensions);
 
     void restart();
+
 
 private:
     int width_;
@@ -49,8 +51,6 @@ private:
     bool is_in_board_(int x) const;
     bool is_board_mergable_() const;
     void next_turn_();
-
-    Position_set all_positions_() const; //REWORK THINGS WITH THIS????
 
     friend struct Test_Access;
 };

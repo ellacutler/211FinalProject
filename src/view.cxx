@@ -61,22 +61,17 @@ View::View(Model const& model)
 void
 View::draw(ge211::Sprite_set& set)
 {
-   for(int i = 0; i < model_.get_height(); i++){
-       for(int j = 0; j <model_.get_width(); j++){
-           set.add_sprite(
-                   tile_sprite,
-                   board_to_screen({i,j}),
-                   10
-           );
-           add_number_sprite(
-                   set,
-                   {i,j},
-                   15
-           );
-
-
-
-       }
+   for(Position pos : model_.all_positions()){
+       set.add_sprite(
+               tile_sprite,
+               board_to_screen(pos),
+               10
+       );
+       add_number_sprite(
+               set,
+               pos,
+               15
+       );
    }
    if (model_.is_gameover()) add_end_screen_(model_.get_won(), set);
 }

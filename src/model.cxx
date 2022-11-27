@@ -216,12 +216,12 @@ Model::Position_set
 Model::empty_positions_() const
 {
     Position_set empty_positions;
-    for (int i = 0; i<width_; i++){
-        for (int j = 0; j<height_; j++){
-            if (0 == get_at_({i, j}))
-            {
-                empty_positions.push_back({i, j});
-            }
+    for (Position pos : all_positions()){
+        if (0 == get_at_(pos)) {
+
+            empty_positions.push_back(pos);
+
+            //std::cout << pos << "\n";
         }
     }
     return empty_positions;
@@ -241,9 +241,8 @@ Model::spawn_tile_(Position_set empty_pos)
 bool
 Model::is_in_board_(int x) const
 {
-    for (int i = 0; i<height_; i++) {
-        if (std::find(board_[i].begin(), board_[i].end(), 2048)
-        != board_[i].end()) return true;
+    for (Position pos : all_positions()) {
+        if (get_at_(pos) == x) return true;
     }
     return false;
 }
@@ -283,7 +282,7 @@ Model::next_turn_()
 }
 
 Model::Position_set
-Model::all_positions_() const
+Model::all_positions() const
 {
     Position_set result;
     for (int j = 0; j<height_; j++) {
@@ -302,7 +301,7 @@ Model::restart()
     gameover_ = false;
     won_ = false;
     //reset board
-    for (Position pos : all_positions_()) {
+    for (Position pos : all_positions()) {
         set_at_(pos,0);
     }
     //spawn starting tiles (2)
