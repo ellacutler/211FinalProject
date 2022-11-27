@@ -24,6 +24,8 @@ public:
 
     void play_move(Dimensions);
 
+    void restart();
+
 private:
     int width_;
     int height_;
@@ -47,6 +49,8 @@ private:
     bool is_in_board_(int x) const;
     bool is_board_mergable_() const;
     void next_turn_();
+
+    Position_set all_positions_() const; //REWORK THINGS WITH THIS????
 
     friend struct Test_Access;
 };

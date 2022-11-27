@@ -30,6 +30,13 @@ Controller::on_key_down(ge211::events::Key key)
         // shift the model down
         model_.play_move({0,1});
     }
+    if (key == ge211::Key::code('q')) {
+        quit();
+    }
+    if (key == ge211::Key::code('r')) {
+        //restart
+        model_.restart();
+    }
 }
 
 View::Dimensions

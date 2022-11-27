@@ -20,6 +20,14 @@ Model::Model(int width, int height)
           gameover_(false),
           won_(false)
 {
+    //throw errors if dims too large/too small
+    if (width > 10 || height > 10) {
+        throw ge211::Client_logic_error("Board::Board: dims too large");
+    } else if (width < 3 || height < 3) {
+        throw ge211::Client_logic_error("Board::Board: dims too small");
+    }
+
+
     std::vector<int> row(width, 0);
     for (int i = 0; i < height; i++) {
         board_.push_back(row);
@@ -272,4 +280,32 @@ Model::next_turn_()
     if (empty_positions_().empty() && !is_board_mergable_()) {
         gameover_ = true;
     }
+}
+
+Model::Position_set
+Model::all_positions_() const
+{
+    Position_set result;
+    for (int j = 0; j<height_; j++) {
+        for (int i = 0; i < width_; i++) {
+            result.push_back({i,j});
+        }
+    }
+    return result;
+}
+
+void
+Model::restart()
+{
+    //highscore recalculation, if necessary
+    score_ = 0;
+    gameover_ = false;
+    won_ = false;
+    //reset board
+    for (Position pos : all_positions_()) {
+        set_at_(pos,0);
+    }
+    //spawn starting tiles (2)
+    spawn_tile_(empty_positions_());
+    spawn_tile_(empty_positions_());
 }
