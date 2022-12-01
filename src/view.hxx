@@ -33,6 +33,7 @@ private:
     ge211::Rectangle_sprite const s1024;
     ge211::Rectangle_sprite const s2048;
     ge211::Font number_font;
+    ge211::Font win_lose_font;
     std::vector<ge211::Text_sprite> number_sprites_;
 
     ge211::Rectangle_sprite const lose_screen;

@@ -43,10 +43,11 @@ View::View(Model const& model)
           s1024({board_size, board_size}, c1024),
           s2048({board_size, board_size}, c2048),
           number_font("sans.ttf", grid_size/2),
+          win_lose_font("sans.ttf", grid_size/4),
           lose_screen(initial_window_dimensions(),lose_color),
           win_screen(initial_window_dimensions(),win_color),
-          lose_text("You lose! Press R to restart!",number_font),
-          win_text("You win! Press R to play again!",number_font)
+          lose_text("You lose! Press R to restart!",win_lose_font),
+          win_text("You win! Press R to play again!",win_lose_font)
 {
  int i = 2;
  while(i <= 2048){
@@ -186,7 +187,7 @@ View::add_end_screen_(bool is_win, Sprite_set& set) const
                 25);
         set.add_sprite(
                 win_text,
-                {model_.get_width()/3,model_.get_height()/2},
+                {model_.get_width()/3,model_.get_height()/2 },
                 30);
     } else {
         set.add_sprite(
@@ -195,7 +196,8 @@ View::add_end_screen_(bool is_win, Sprite_set& set) const
                 25);
         set.add_sprite(
                 lose_text,
-                {0,grid_size*model_.get_height()/2,},
+                {grid_size*model_.get_width()/10,grid_size*model_.get_height()
+                /2},
                 30);
     }
 
