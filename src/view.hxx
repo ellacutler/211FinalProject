@@ -17,7 +17,7 @@ public:
 
 private:
     Model const& model_;
-
+    ge211::Rectangle_sprite const background_sprite;
     ge211::Font sans30_{"sans.ttf", 30};
     ge211::Text_sprite value_sprite_[4][4];
     ge211::Rectangle_sprite const tile_sprite;
@@ -33,15 +33,20 @@ private:
     ge211::Rectangle_sprite const s1024;
     ge211::Rectangle_sprite const s2048;
     ge211::Font number_font;
+    ge211::Font score_font;
     ge211::Font win_lose_font;
     std::vector<ge211::Text_sprite> number_sprites_;
+    std::vector<ge211::Text_sprite> score_sprites_;
 
     ge211::Rectangle_sprite const lose_screen;
     ge211::Rectangle_sprite const win_screen;
     ge211::Text_sprite lose_text;
     ge211::Text_sprite win_text;
+    ge211::Text_sprite score_text;
 
     View::Position board_to_screen(Model::Position pos) const;
+    void add_score_sprite(ge211::Sprite_set&, Model::Position pos, int
+    z) const;
     void add_number_sprite(ge211::Sprite_set&, Model::Position pos, int
     z) const;
     void add_number_text(std::string&,ge211::Font&) const;

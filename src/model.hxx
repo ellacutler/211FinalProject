@@ -22,7 +22,7 @@ public:
     int get_height() const;
     bool get_won() const;
     bool is_gameover() const;
-
+    int get_score() const;
     void play_move(Dimensions);
 
     void restart();

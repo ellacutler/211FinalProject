@@ -81,7 +81,11 @@ Model::get_won() const
 {
     return won_;
 }
-
+int
+Model::get_score() const
+{
+    return score_;
+}
 
 ///Actually play a move, shifting the board, checking for gameover and only
 // spawning a new block if the shift was a legal move
