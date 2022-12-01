@@ -28,7 +28,7 @@ main(int argc, char *argv[])
         Controller(width, height).run();
 
     } catch (std::exception const& e) {
-        // This prints out error messages if, say, the command-line argument
+        // This prints out error messages if the command-line argument
         // cannot be parsed as `int`s.
         std::cerr << argv[0] << ": " << e.what() << "\n";
         return 1;
