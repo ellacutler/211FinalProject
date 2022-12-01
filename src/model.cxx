@@ -21,6 +21,40 @@ Model::Model(int width, int height)
           gameover_(false),
           won_(false)
 {
+    //for getting about-to-win or about-to-lose states
+    // 1111 -> about to win 3x3
+    // 2222 -> about to lose 3x3
+    if (width == 1111) {
+        width_ = 3;
+        height_ = 3;
+        std::vector<int> row(width, 0);
+        for (int i = 0; i < height; i++) {
+            board_.push_back(row);
+        }
+        board_[2][2] = 1024;
+        board_[1][2] = 1024;
+        return;
+    }
+    if (width == 2222) {
+        width_ = 3;
+        height_ = 3;
+        std::vector<int> row(width, 0);
+        for (int i = 0; i < height; i++) {
+            board_.push_back(row);
+        }
+        board_[0][0] = 2;
+        board_[0][1] = 4;
+        board_[0][1] = 8;
+        board_[0][2] = 16;
+        board_[1][0] = 32;
+        board_[1][1] = 64;
+        board_[1][2] = 128;
+        board_[2][0] = 256;
+        board_[2][1] = 512;
+        // note: board_[2][2] = 0;
+        return;
+    }
+
     //throw errors if dims too large/too small
     if (width > 10 || height > 10) {
         throw ge211::Client_logic_error("Board::Board: dims too large");
@@ -59,7 +93,7 @@ Model::Model(int width, int height, ge211::Posn<int> test1, ge211::Posn<int>
     for (int i = 0; i < height; i++) {
         board_.push_back(row);
     }
-// non random positions so it's easier to test
+    // non-random start positions so it's easier to test
 
     set_at_(test1, 2);
     set_at_(test2,2);

@@ -1,5 +1,6 @@
 #include "controller.hxx"
 #include <iostream>
+#include <typeinfo>
 
 int
 main(int argc, char *argv[])

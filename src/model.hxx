@@ -86,7 +86,7 @@ public:
     /// the user, modify the board - shift and merge tiles as necessary -
     /// in the specified direction using 'shift_()'
     /// Then, check if the game is over.
-    /// If the game is not over, and the 'shift_()' call \
+    /// If the game is not over, and the 'shift_()' call
     /// was a legal move (changed the board) spawn a new tile.
     /// Do not play a move if 'gameover_' is true.
     ///

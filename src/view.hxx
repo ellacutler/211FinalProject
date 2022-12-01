@@ -23,14 +23,8 @@ private:
     Model const& model_;
 
     ge211::Rectangle_sprite const background_sprite;
-    ge211::Font sans30_{"sans.ttf", 30};
-    ge211::Text_sprite value_sprite_[4][4];
 
-
-    // Sprites for text,
-    /// ge211::Font sans30_{"sans.ttf", 30}; ------ CUT THIS???
-    /// ge211::Text_sprite value_sprite_[4][4]; ------ CUT THIS???
-
+    /// Sprites for text, tiles, tile values
     ge211::Rectangle_sprite const tile_sprite;
     ge211::Rectangle_sprite const s2;
     ge211::Rectangle_sprite const s4;
@@ -58,16 +52,13 @@ private:
     /// Converts abstract board position to concrete screen position
     View::Position board_to_screen(Model::Position pos) const;
 
+    /// Adds score sprite to the 'ge211::Sprite_set' to be drawn to screen
     void add_score_sprite(ge211::Sprite_set&, Model::Position pos, int
     z) const;
 
-
     /// Adds text, tile sprites to the 'ge211::Sprite_set' to be drawn to screen
-
     void add_number_sprite(ge211::Sprite_set&, Model::Position pos, int
     z) const;
-
-    // void add_number_text(std::string&,ge211::Font&) const; ------ CUT THIS???
 
     /// Adds text, end screen overlay sprites to the 'ge211::Sprite_set' to be
     /// drawn to screen

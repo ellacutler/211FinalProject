@@ -2,15 +2,18 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+
+// Useful Type aliases
 using Color = ge211::Color;
 using Sprite_set = ge211::Sprite_set;
 
+// Pixel size of each tile on displayed grid
 int const grid_size = 100;
+// Margins, used for centering/offsetting
 int const board_size = (grid_size - 2);
 int  text_center = board_size/4 + 5 ;
-// eventually make grid size a function of the model width and height
-// i hard coded the background sprites because there wasn't a real pattern for
-// all the numbers
+
+// Colors for empty, non-empty tiles
 static Color const tile_color {100, 100, 100};
 static Color const c2 {238, 228, 218 };
 static Color const c4 {237, 224, 200};
@@ -24,12 +27,13 @@ static Color const c512 {237, 200, 80};
 static Color const c1024{237, 197, 63};
 static Color const c2048{237, 194, 46};
 
+// Colors for tile value text
 static Color const dark_text_color  {0,0,0};
 static Color const light_text_color {255,255,255};
 
-static Color const lose_color{255,0,0,50};
-static Color const win_color {255,255,0,50};
-
+// Colors for win/lose text
+static Color const lose_color{255,0,0,100};
+static Color const win_color {255,255,0,100};
 
 View::View(Model const& model)
         : model_(model),
@@ -55,7 +59,7 @@ View::View(Model const& model)
           win_screen(initial_window_dimensions(),win_color),
           lose_text("You lose! Press R to restart!",win_lose_font),
           win_text("You win! Press R to play again!",win_lose_font),
-          score_text("score: ",score_font)
+          score_text("Score: ",score_font)
 {
 
  int i = 2;
@@ -64,6 +68,7 @@ View::View(Model const& model)
     std::string sval = std::to_string(i);
 
     ge211::Text_sprite::Builder builder(number_font);
+    // Dark colored text if val is 2,4 otherwise light colored text
     if (i > 4) builder.color(light_text_color) << sval;
     else builder.color(dark_text_color) << sval;
 
@@ -72,16 +77,10 @@ View::View(Model const& model)
     i=i*2;
  }
 
- // making a different counter for score sprites
-int g = 0;
- while(g<10 ){
+ for(int g = 0; g<10; g++){
      std::string scoreval = std::to_string(g);
      score_sprites_.emplace_back(scoreval,score_font);
-     g = g+1;
  }
- ge211::Text_sprite::Builder builder(number_font); //use this somehow to get
- // sprite color
-
 }
 
 void
@@ -89,7 +88,9 @@ View::draw(ge211::Sprite_set& set)
 {
     set.add_sprite(
             score_text,
-            board_to_screen({0,0}) + ge211::Dims<int>{0,400},
+            board_to_screen({0,0})
+            + Dimensions{model_.get_width()*grid_size/20,
+                         model_.get_height()*grid_size},
             40
             );
     set.add_sprite(
@@ -99,7 +100,9 @@ View::draw(ge211::Sprite_set& set)
         );
     add_score_sprite(
             set,
-            board_to_screen({2,0}) + ge211::Dims<int>{0,400},
+            board_to_screen({2,0})
+            + Dimensions {model_.get_width()*grid_size/20,
+                          model_.get_height()*grid_size},
             40
             );
    for(Position pos : model_.all_positions()){
@@ -119,7 +122,7 @@ View::draw(ge211::Sprite_set& set)
 View::Position
 View::board_to_screen(Model::Position pos) const
 {
-    // should return the array position divided by total array length
+    // Returns the array position divided by total array length
     // multiplied by the screen dimensions
     return {(grid_size+1)*pos.x , (grid_size+1)*pos.y };
 }
@@ -127,6 +130,9 @@ View::board_to_screen(Model::Position pos) const
 void
 View::add_score_sprite(ge211::Sprite_set& set, Model::Position pos, int z) const
 {
+    // 1. convert to string (can't pass chars into text_sprite)
+    // 2. find relevant text sprite with strcmp
+    // 3. add to a position to the right of the previous digit
 
    // get the score
     int score = model_.get_score();
@@ -137,72 +143,72 @@ View::add_score_sprite(ge211::Sprite_set& set, Model::Position pos, int z) const
     // the string vector
     std::copy(score_str.begin(), score_str.end(), std::back_inserter(str_vec));
     // for each element of the vector
-    // ge211::Posn<int> =
+    // Position =
     // iterator for positions
     int i = 0;
 
     for (char& s: str_vec){
         // have corresponding integer value
-        // i am a  bit tired so this might be a weird way to do it
         int g = s - '0';
-        ge211::Posn<int> p = pos + grid_size/3.5*ge211::Dims<int>{i,0};
-        std::cout << p.x << "\n";
-        std::cout << model_.get_score() << "\n";
+        Position p = pos + grid_size/3.5*Dimensions{i,0};
 
         set.add_sprite(
-
                 score_sprites_.at(g),
                 p,
                 40
-
         );
         i+= 1;
 
-
-
+        // Once we have the vector of each part of score, then set.add sprite
+        // all
     }
-
-    // 1. convert to string (can't pass chars into text_sprite)
-    // 2. find relevant text sprite with strcmp
-    // 3. add to a position to the right of the previous digit
-
-
-
-    // once we have the vector of each part of score, then set.add sprite all
-    // of them
-    // have to do this process so we don't have a text sprite for literally
-    // every possible score hah
 
 }
 void
 View::add_number_sprite(ge211::Sprite_set& set, Model::Position pos, int z)
 const
-{ // using from below, tried but it's not worth not-hard coding
-    // (unless there's a way to convert between strings and sprites..)
+{
     int val = model_[pos];
     //int displayindex = log2(val) - 1;
-    if(val > 0 && val < 7){
-        ge211::Posn<int> position= board_to_screen({pos.x ,pos.y})
-                + ge211::Dims<int>(text_center,0);
+
+    /// Note the different Centering for 2, 3, 4 digit tiles
+    if(val > 0 && val < 16){
+        Position position= board_to_screen({pos.x ,pos.y})
+                + Dimensions(text_center,0);
         set.add_sprite(
                 number_sprites_.at(log2(val) - 1),
                 position,
                 20
 
         );
-    } else if(val >= 7){
-        ge211::Posn<int> position= board_to_screen({pos.x ,pos.y})
-                                   + ge211::Dims<int>(0.75*text_center,0);
+    } else if(val >= 16 && val < 128){
+        Position position= board_to_screen({pos.x ,pos.y})
+                + Dimensions(0.7*text_center,0);
         set.add_sprite(
                 number_sprites_.at(log2(val) - 1),
                 position,
                 20
-
+        );
+    } else if(val >= 128 && val<1024){
+        Position position= board_to_screen({pos.x ,pos.y})
+                + Dimensions(0.25*text_center,0);
+        set.add_sprite(
+                number_sprites_.at(log2(val) - 1),
+        position,
+        20
+        );
+    } else if(val >= 1024){
+        Position position= board_to_screen({pos.x ,pos.y})
+                - Dimensions(0.2*text_center,0); //no adjustment
+        set.add_sprite(
+                number_sprites_.at(log2(val) - 1),
+        position,
+        20
         );
     }
 
+    // Hardcoded - Use val decide which sprite to use
     if(val == 2){
-
         set.add_sprite(
                 s2,
                 board_to_screen({pos.x, pos.y}),
@@ -287,7 +293,8 @@ View::add_end_screen_(bool is_win, Sprite_set& set) const
                 25);
         set.add_sprite(
                 win_text,
-                {model_.get_width()/3,model_.get_height()/2 },
+                {grid_size*model_.get_width()/10,
+                 grid_size*model_.get_height()/2},
                 30);
     } else {
         set.add_sprite(
@@ -296,16 +303,10 @@ View::add_end_screen_(bool is_win, Sprite_set& set) const
                 25);
         set.add_sprite(
                 lose_text,
-                {grid_size*model_.get_width()/10,grid_size*model_.get_height()
-                /2},
+                {grid_size*model_.get_width()/10,
+                 grid_size*model_.get_height()/2},
                 30);
     }
-
-}
-
-void
-View::add_number_text(std::string&, ge211::Font&) const
-{
 
 }
 
