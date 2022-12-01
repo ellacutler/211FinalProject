@@ -168,9 +168,18 @@ const
     // (unless there's a way to convert between strings and sprites..)
     int val = model_[pos];
     //int displayindex = log2(val) - 1;
-    if(val != 0){
+    if(val > 0 && val < 7){
         ge211::Posn<int> position= board_to_screen({pos.x ,pos.y})
                 + ge211::Dims<int>(text_center,0);
+        set.add_sprite(
+                number_sprites_.at(log2(val) - 1),
+                position,
+                20
+
+        );
+    } else if(val >= 7){
+        ge211::Posn<int> position= board_to_screen({pos.x ,pos.y})
+                                   + ge211::Dims<int>(0.75*text_center,0);
         set.add_sprite(
                 number_sprites_.at(log2(val) - 1),
                 position,
