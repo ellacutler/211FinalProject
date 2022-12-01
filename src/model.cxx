@@ -287,6 +287,7 @@ Model::is_in_board_(int x) const
 bool
 Model::is_board_mergable_() const
 {
+
     // iterate through the board, checking the number TO THE RIGHT and BELOW
     // each one.
     // If this number is the same, return true.
@@ -333,7 +334,7 @@ Model::all_positions() const
 void
 Model::restart()
 {
-    //highscore recalculation, if necessary
+
     score_ = 0;
     gameover_ = false;
     won_ = false;
@@ -344,4 +345,14 @@ Model::restart()
     //spawn starting tiles (2)
     spawn_tile_(empty_positions_());
     spawn_tile_(empty_positions_());
+}
+
+void
+Model::set_all_positions(int i)
+{
+
+    for (Position pos : all_positions()) {
+        set_at_(pos,i);
+
+    }
 }

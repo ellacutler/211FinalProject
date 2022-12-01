@@ -59,6 +59,8 @@ private:
     bool is_in_board_(int x) const;
     bool is_board_mergable_() const;
     void next_turn_();
+    // function to set all board positions to one value, mostly for testing
+    void set_all_positions(int i);
 
-    friend struct Test_Access;
+
 };
