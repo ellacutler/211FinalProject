@@ -8,6 +8,7 @@ Model::Model()
         : Model(4,4)
 { }
 
+
 Model::Model(int size)
         : Model(size, size)
 { }
@@ -37,6 +38,32 @@ Model::Model(int width, int height)
     spawn_tile_(empty_positions_());
     spawn_tile_(empty_positions_());
 }
+Model::Model(int width, int height, ge211::Posn<int> test1, ge211::Posn<int>
+        test2)
+        : width_(width),
+          height_(height),
+          score_(0),
+          random_number_source(ge211::unbounded),
+          gameover_(false),
+          won_(false)
+{
+    //throw errors if dims too large/too small
+    if (width > 10 || height > 10) {
+        throw ge211::Client_logic_error("Board::Board: dims too large");
+    } else if (width < 3 || height < 3) {
+        throw ge211::Client_logic_error("Board::Board: dims too small");
+    }
+
+
+    std::vector<int> row(width, 0);
+    for (int i = 0; i < height; i++) {
+        board_.push_back(row);
+    }
+// non random positions so it's easier to test
+
+    set_at_(test1, 2);
+    set_at_(test2,2);
+}
 
 int
 Model::operator[](Model::Position pos) const
@@ -54,6 +81,12 @@ Model::print_board() const
         }
         std::cout << "\n";
     }
+    std::cout << "\n";
+}
+void
+Model::print_score() const
+{
+    std::cout << score_ << "\n";
 }
 
 bool

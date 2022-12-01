@@ -9,14 +9,17 @@ public:
     Model();
     Model(int size);
     Model(int width, int height);
+    Model(int width, int height, ge211::Posn<int> test1,ge211::Posn<int>
+            test2 );
 
     using Position = ge211::Posn<int>;
     using Dimensions = ge211::Dims<int>;
     using Position_set = std::vector<Position>;
 
     void print_board() const;
+    void print_score() const;
     Position_set all_positions() const;
-
+    // accesses board positions and returns value at stated position
     int operator[](Model::Position pos) const;
     int get_width() const;
     int get_height() const;
@@ -26,6 +29,11 @@ public:
     void play_move(Dimensions);
 
     void restart();
+
+    // When this class is compiled for testing, members of a struct named
+    // Test_access will be allowed to access private members of this class.
+    friend struct Test_access;
+
 
 
 private:
