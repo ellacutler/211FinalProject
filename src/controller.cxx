@@ -6,12 +6,6 @@ Controller::Controller(int width, int height)
 { }
 
 void
-Controller::draw(ge211::Sprite_set& set)
-{
-    view_.draw(set);
-}
-
-void
 Controller::on_key_down(ge211::events::Key key)
 {
     if (key == ge211::Key::left()) {
@@ -34,9 +28,14 @@ Controller::on_key_down(ge211::events::Key key)
         quit();
     }
     if (key == ge211::Key::code('r')) {
-        //restart
         model_.restart();
     }
+}
+
+void
+Controller::draw(ge211::Sprite_set& set)
+{
+    view_.draw(set);
 }
 
 View::Dimensions

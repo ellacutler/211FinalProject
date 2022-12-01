@@ -24,6 +24,9 @@ static Color const c512 {237, 200, 80};
 static Color const c1024{237, 197, 63};
 static Color const c2048{237, 194, 46};
 
+static Color const dark_text_color  {0,0,0};
+static Color const light_text_color {255,255,255};
+
 static Color const lose_color{255,0,0,50};
 static Color const win_color {255,255,0,50};
 
@@ -49,14 +52,21 @@ View::View(Model const& model)
           lose_text("You lose! Press R to restart!",win_lose_font),
           win_text("You win! Press R to play again!",win_lose_font)
 {
+
  int i = 2;
+ ge211::Text_sprite number_sprite;
  while(i <= 2048){
     std::string sval = std::to_string(i);
-    number_sprites_.emplace_back(sval, number_font);
-    i= i*2;
+
+    ge211::Text_sprite::Builder builder(number_font);
+    if (i > 4) builder.color(light_text_color) << sval;
+    else builder.color(dark_text_color) << sval;
+
+    number_sprite.reconfigure(builder);
+    number_sprites_.emplace_back(number_sprite);
+    i=i*2;
  }
- ge211::Text_sprite::Builder builder(number_font); //use this somehow to get
- // sprite color
+
 }
 
 void

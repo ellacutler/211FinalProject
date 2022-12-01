@@ -34,8 +34,8 @@ Model::Model(int width, int height)
     }
 
     //spawn starting tiles (2)
-    spawn_tile_(empty_positions_());
-    spawn_tile_(empty_positions_());
+    spawn_tile_();
+    spawn_tile_();
 }
 
 int
@@ -61,37 +61,36 @@ Model::in_bounds_(Model::Position pos) const
 {
     return (pos.x>=0 && pos.x<width_) && (pos.y>=0 && pos.y<height_);
 }
+
 int
 Model::get_width() const
 {
     return width_;
 }
+
 int
 Model::get_height() const
 {
     return height_;
 }
+
 bool
 Model::is_gameover() const
 {
     return gameover_;
 }
+
 bool
 Model::get_won() const
 {
     return won_;
 }
 
-
-///Actually play a move, shifting the board, checking for gameover and only
-// spawning a new block if the shift was a legal move
 void
 Model::play_move(Dimensions dir)
 {
     //disallow moves if game is over
     if (gameover_) {
-        ///for debug
-        // std::cout << "GAME IS OVER\n";
         return;
     }
 
@@ -110,9 +109,9 @@ Model::play_move(Dimensions dir)
 ///functions are defined as below:
 
 void
-Model::set_at_(Model::Position pos, int n)
+Model::set_at_(Model::Position pos, int val)
 {
-    board_[pos.y][pos.x] = n;
+    board_[pos.y][pos.x] = val;
 }
 
 int
@@ -137,13 +136,19 @@ Model::choose_corner_(Model::Dimensions dir) const
     return {width_-1,height_-1};
 }
 
+void
+Model::increase_score_(int val)
+{
+    score_ += val;
+}
+
 bool
 Model::shift_(Model::Dimensions dir)
 {
     ///for debug
     // std::cout << dir << "\n";
 
-    //for returning whether or not board has changed as a result of input
+    //for returning whether or not board has changed as a result of the shift
     bool board_changed = false;
 
     ///To shift the board to the right, we want to start on the right and
@@ -206,29 +211,22 @@ Model::shift_(Model::Dimensions dir)
     return board_changed;
 }
 
-void
-Model::increase_score_(int x)
-{
-    score_ += x;
-}
-
 Model::Position_set
 Model::empty_positions_() const
 {
     Position_set empty_positions;
     for (Position pos : all_positions()){
         if (0 == get_at_(pos)) {
-
             empty_positions.push_back(pos);
-
-            //std::cout << pos << "\n";
         }
     }
     return empty_positions;
 }
+
 void
-Model::spawn_tile_(Position_set empty_pos)
+Model::spawn_tile_()
 {
+    Position_set empty_pos = empty_positions_();
     //get a random element of empty_pos, set it to value of 2 or 4
     int loc = random_number_source(0,empty_pos.size()-1);
     int val = random_number_source(1,10) == 1 ? 4 : 2; //10% chance of 4
@@ -239,10 +237,10 @@ Model::spawn_tile_(Position_set empty_pos)
 }
 
 bool
-Model::is_in_board_(int x) const
+Model::is_in_board_(int val) const
 {
     for (Position pos : all_positions()) {
-        if (get_at_(pos) == x) return true;
+        if (get_at_(pos) == val) return true;
     }
     return false;
 }
@@ -250,10 +248,10 @@ Model::is_in_board_(int x) const
 bool
 Model::is_board_mergable_() const
 {
-    // iterate through the board, checking the number TO THE RIGHT and BELOW
-    // each one.
-    // If this number is the same, return true.
-    // Return false at the end if this is not the case anywhere on the board.
+    // iterate through the board,
+    // checking the number TO THE RIGHT and BELOW each one.
+    // If this number is the SAME, return TRUE.
+    // Return FALSE at the end if this is not the case anywhere on the board.
 
     int cur;
     for (int j = 0; j<height_; j++){
@@ -270,14 +268,17 @@ Model::is_board_mergable_() const
 void
 Model::next_turn_()
 {
-    // check if game over/won
+    // check if game won
     if (is_in_board_(2048)) {
         gameover_ = true;
         won_ = true;
+        return;
     }
-    spawn_tile_(empty_positions_());
+    spawn_tile_();
+    // check if game lost
     if (empty_positions_().empty() && !is_board_mergable_()) {
         gameover_ = true;
+        return;
     }
 }
 
@@ -296,7 +297,6 @@ Model::all_positions() const
 void
 Model::restart()
 {
-    //highscore recalculation, if necessary
     score_ = 0;
     gameover_ = false;
     won_ = false;
@@ -305,6 +305,6 @@ Model::restart()
         set_at_(pos,0);
     }
     //spawn starting tiles (2)
-    spawn_tile_(empty_positions_());
-    spawn_tile_(empty_positions_());
+    spawn_tile_();
+    spawn_tile_();
 }
