@@ -227,19 +227,19 @@ TEST_CASE("game lose")
     access.set_manual_positions(
             {256,16,32, 4,
              4,128, 1024, 8,
-             32,0, 8, 64,
+             32,128, 8, 64,
              256,16, 256, 8}
     );
     access.print_board();
     CHECK(model.get_won()== false);
-    CHECK(access.is_board_mergable()==false);
+    CHECK(access.is_board_mergable()==true);
     CHECK(access.game_over() == false);
 
     model.play_move({0,1});
     access.check_positions({
            256,2,32, 4,
            4,16, 1024, 8,
-           32,128, 8, 64,
+           32,256, 8, 64,
            256,16, 256, 8
     });
     access.print_board();
@@ -250,9 +250,9 @@ TEST_CASE("game lose")
     CHECK(access.game_over() == true);
     std::cout << "--------------------------------------\n";
 }
-TEST_CASE("More complex merging")
+TEST_CASE("complex merging 2")
 {
-    std::cout << "\n----------MERGING TEST 2----------\n";
+    std::cout << "\n----------Complex Merging 2 Test----------\n";
     Model model(4,4, {1,1}, {2,2} );
     Test_access access(model);
     access.set_manual_positions(
