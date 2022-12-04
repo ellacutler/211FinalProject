@@ -35,7 +35,7 @@ public:
     using Position_set = std::vector<Position>;
 
 private:
-    // PRIVATE DATA MEMBERS
+    // DATA MEMBERS
     int width_;
     int height_;
     int score_;

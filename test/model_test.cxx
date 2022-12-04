@@ -23,15 +23,11 @@ struct Test_access
     void print_board() const;
     Position_set all_positions() const;
     void set_manual_positions(const std::vector<int> &vect);
+    void check_positions(const std::vector<int> &vect);
     bool game_over();
-    void next_turn();
 
 };
 //TEST ACCESS MEMBER FUNCTIONS!
-void
-Test_access::next_turn(){
-    model.next_turn_();
-}
 Model::Position_set
 Test_access::all_positions() const
 {
@@ -59,17 +55,25 @@ Test_access::print_board() const
 void
 Test_access::set_manual_positions(const std::vector<int> &vect)
 {
-    model.set_manual_positions(vect);
-
+    Position_set all_pos = all_positions();
+    for (size_t i = 0; i<vect.size(); i++) {
+        model.set_at_(all_pos[i], vect[i]);
+    }
+}
+void
+Test_access::check_positions(const std::vector<int> &vect)
+{
+    Position_set all_pos = all_positions();
+    for (size_t i = 0; i<vect.size(); i++) {
+        if (model.get_at_(all_pos[i]) != vect[i]) {
+            std::cout << "Fail at: " << all_pos[i] << "\n";
+        }
+        CHECK(model.get_at_(all_pos[i]) == vect[i]);
+    }
 }
 bool
 Test_access::game_over(){
     return model.gameover_;
-}
-
-TEST_CASE("example test (TODO: replace this)")
-{
-    CHECK(1 + 1 == 2);
 }
 
 ///MODEL TESTS
@@ -81,52 +85,99 @@ TEST_CASE(" aa starting condition test")
      * initialize the game,
      * press a few buttons,
      * check that stuff is created and merges correctly,
-     * score increases correctly,.
-
+     * score increases correctly.
      */
+    std::cout << "\n----------STARTING CONDITION TEST----------\n";
     Model model(4,4, {1,1}, {2,2} );
+    Test_access access(model);
     // sets intial values at 1,1 and 2,2
-    // Test_access m (model);
     CHECK_FALSE(model.is_gameover());
     CHECK(model.get_score() == 0);
     model.print_board();
+    access.check_positions({
+        0,0,0,0,
+        0,2,0,0,
+        0,0,2,0,
+        0,0,0,0,
+    });
+
     model.play_move({-1,0});
     model.print_score();
-    model.print_board();
-
     CHECK((model.get_score() == 0));
+    model.print_board();
+    access.check_positions({
+        0,0,2,0,
+        2,0,0,0,
+        2,0,0,0,
+        0,0,0,0,
+    });
+
     // shift the board down...
     model.play_move({0,1});
     model.print_score();
-    model.print_board();
     CHECK(model.get_score() == 4);
+    model.print_board();
+    access.check_positions({
+           0,0,2,0,
+           0,0,0,0,
+           0,0,0,0,
+           4,0,2,0,
+    });
 
-
+    std::cout << "--------------------------------------\n";
 }
 
-// model tests run in order hense the aa, bb, etc.
+// model tests run in order hence the aa, bb, etc.
 TEST_CASE("bb complex merging test")
 {
-    Model model(4,4, {1,1}, {2,2} );
+    std::cout << "\n----------COMPLEX MERGING TEST----------\n";
+    Model model(4,4, {1,1}, {2,2});
     Test_access access(model);
     access.set_all_positions(2);
     access.print_board();
+    access.check_positions({
+           2,2,2,2,
+           2,2,2,2,
+           2,2,2,2,
+           2,2,2,2,
+    });
     CHECK(access.is_board_mergable() == true);
-    std::cout << "hi \n" ;
+
     model.play_move({-1,0});
     access.print_board();
+    access.check_positions({
+           4,4,0,0,
+           4,4,2,0,
+           4,4,0,0,
+           4,4,0,0,
+    });
     CHECK(model.get_score() == 32);
+
     model.play_move({0,-1});
     CHECK(model.get_score() == 64);
+    access.print_board();
+    access.check_positions({
+           8,8,2,0,
+           8,8,0,2,
+           0,0,0,0,
+           0,0,0,0,
+    });
+
     model.play_move({0,1});
     model.print_score();
-    // this one can either be 100 or 96 depending only on what is randomly
-
-    CHECK((model.get_score() == 96 || model.get_score() == 100));
+    CHECK(model.get_score() == 96);
     model.print_board();
+    access.check_positions({
+           0,0,2,0,
+           0,0,0,0,
+           0,0,0,0,
+           16,16,2,2,
+    });
+    std::cout << "--------------------------------------\n";
 }
-TEST_CASE( "game win ")
+TEST_CASE("game win")
 {
+    std::cout << "\n----------GAME WIN TEST----------\n";
     Model model(4,4, {1,1}, {2,2} );
     Test_access access(model);
     access.set_manual_positions(
@@ -135,18 +186,42 @@ TEST_CASE( "game win ")
              0,256, 0, 0,
              0,0, 0, 0}
             );
-
     access.print_board();
+
     model.play_move({0,-1});
+    access.print_board();
+    access.check_positions({
+           1024,512,0,0,
+           2,512,0,0,
+           0,0,0,0,
+           0,0,0,0,
+    });
+
     model.play_move({0,-1});
+    access.print_board();
+    access.check_positions({
+           1024,1024,0,0,
+           2,2,0,0,
+           0,0,0,0,
+           0,0,0,0,
+    });
     CHECK(model.get_won()== false);
+
     model.play_move({-1,0});
+    access.print_board();
+    access.check_positions({
+           2048,0,0,0,
+           4,0,0,0,
+           0,0,0,0,
+           0,0,0,0,
+    });
     CHECK(model.get_won() == true);
     CHECK(model.is_gameover()==true);
-
+    std::cout << "--------------------------------------\n";
 }
 TEST_CASE("game lose")
 {
+    std::cout << "\n----------GAME LOSE TEST----------\n";
     Model model(4,4, {1,1}, {2,2} );
     Test_access access(model);
     access.set_manual_positions(
@@ -155,19 +230,29 @@ TEST_CASE("game lose")
              32,0, 8, 64,
              256,16, 256, 8}
     );
-
     access.print_board();
+    CHECK(model.get_won()== false);
+    CHECK(access.is_board_mergable()==false);
+    CHECK(access.game_over() == false);
+
     model.play_move({0,1});
+    access.check_positions({
+           256,2,32, 4,
+           4,16, 1024, 8,
+           32,128, 8, 64,
+           256,16, 256, 8
+    });
     access.print_board();
 
 
     CHECK(model.get_won()== false);
     CHECK(access.is_board_mergable()==false);
     CHECK(access.game_over() == true);
-
+    std::cout << "--------------------------------------\n";
 }
-TEST_CASE("game merge 2")
+TEST_CASE("More complex merging")
 {
+    std::cout << "\n----------MERGING TEST 2----------\n";
     Model model(4,4, {1,1}, {2,2} );
     Test_access access(model);
     access.set_manual_positions(
@@ -176,18 +261,31 @@ TEST_CASE("game merge 2")
              4,0, 8, 64,
              256,16, 256, 8}
     );
-
     access.print_board();
-    model.play_move({0,-1});
-    model.play_move({-1,0});
 
+    model.play_move({0,-1});
+    access.check_positions({
+           256,256,32,4,
+           8,16,4,8,
+           256,0,8,64,
+           0,2,256,8
+    });
+    access.print_board();
+
+    model.play_move({-1,0});
+    access.check_positions({
+           512,32,4,0,
+           8,16,4,8,
+           256,8,64,0,
+           2,256,8,2,
+    });
     access.print_board();
 
 
     CHECK(model.get_won()== false);
     CHECK(access.is_board_mergable()==true);
     CHECK(access.game_over() == false);
-
+    std::cout << "--------------------------------------\n";
 }
 
 

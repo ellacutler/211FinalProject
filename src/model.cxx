@@ -72,6 +72,7 @@ Model::Model(int width, int height)
     spawn_tile_();
     spawn_tile_();
 }
+// For testing
 Model::Model(int width, int height, ge211::Posn<int> test1, ge211::Posn<int>
         test2)
         : width_(width),
@@ -93,10 +94,10 @@ Model::Model(int width, int height, ge211::Posn<int> test1, ge211::Posn<int>
     for (int i = 0; i < height; i++) {
         board_.push_back(row);
     }
-    // non-random start positions so it's easier to test
-
+    // non-random start positions, rng stub so that it's easier to test
     set_at_(test1, 2);
     set_at_(test2,2);
+    random_number_source.stub_with(2);
 }
 
 int
